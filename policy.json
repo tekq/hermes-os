@@ -6,10 +6,10 @@
     ],
     "transports": {
         "docker": {
-            "quay.io/asmx2/fedora-bootc": [
+            "quay.io/asmx2/hermes-bootc": [
                 {
                     "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/asmx2-bootc.pub",
+                    "keyPath": "/etc/pki/containers/hermes-bootc.pub",
                     "signedIdentity": {
                         "type": "matchRepository"
                     }

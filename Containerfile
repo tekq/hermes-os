@@ -1,5 +1,4 @@
-FROM quay.io/fedora/fedora-silverblue:44 
-# TODO: Switch to Rawhide
+FROM quay.io/fedora/fedora-silverblue:44
 
 ## RPMFusion
 RUN dnf -y install \
@@ -17,7 +16,7 @@ RUN dnf -y copr enable ublue-os/akmods && \
     dnf -y in framework-laptop-kmod && \
     dnf clean all
 
-## Nvidia
+## Nvidia 
 RUN dnf -y in akmod-nvidia-open \
               xorg-x11-drv-nvidia-cuda && \
     dnf -y copr enable @ai-ml/nvidia-container-toolkit && \
@@ -35,52 +34,43 @@ RUN mkdir -p /usr/lib/bootc/kargs.d/ && \
 
 ## Desktop stuf
 RUN dnf -y in virt-manager \
+    lxc \
     libvirt-daemon-kvm \
     libvirt-daemon-lxc \
     distrobox \
     podman \
     plymouth \
     gnome-disk-utility \
-    gnome-software && \
+    gnome-software 
+    adw-gtk3-theme && \
     dnf -y rm firefox \
     yelp \
     gnome-tour \
     gnome-system-monitor \
+    gnome-shell-extension-common \
+    gnome-shell-extension-apps-menu \
+    gnome-shell-extension-launch-new-instance \
+    gnome-shell-extension-places-menu \
+    gnome-shell-extension-window-list \
+    gnome-shell-extension-background-logo \
     malcontent-control && \
     dnf clean all
+
+## Set adw-gtk3
+COPY skel/.config/dconf/user /etc/skel/.config/dconf/user
 
 ## Systemd
 RUN systemctl enable libvirtd.service && \
     systemctl enable bootc-fetch-apply-updates.service
 
-## Flatpak
-RUN flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-## Default Apps
-RUN flatpak install -y \
-    org.mozilla.firefox \
-    app.devsuite.Ptyxis \
-    it.mijorus.gearlever \
-    com.github.tchx84.Flatseal \
-    org.gnome.Calculator \
-    org.gnome.Connections \
-    org.gnome.Decibels \
-    org.gnome.Papers \
-    org.gnome.Loupe \
-    org.gnome.Showtime \
-    org.gnome.SimpleScan \
-    org.gnome.Snapshot \
-    org.gnome.TextEditor \
-    org.gnome.Weather
-
+## Signing
 RUN mkdir -p /etc/pki/containers /etc/containers/registries.d
 
-## Fix this shit
-#COPY cosign.pub /etc/pki/containers/hermes-bootc.pub
+COPY cosign.pub /etc/pki/containers/hermes-bootc.pub
 
-#COPY policy.json /etc/containers/policy.json
+COPY policy.json /etc/containers/policy.json
 
-#COPY hermes-bootc.yaml /etc/containers/registries.d/hermes-bootc.yaml
+COPY hermes-bootc.yaml /etc/containers/registries.d/hermes-bootc.yaml
 
 RUN dnf clean all
 
