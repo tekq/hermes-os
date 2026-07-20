@@ -55,8 +55,11 @@ RUN dnf -y in virt-manager \
     malcontent-control && \
     dnf clean all
 
+## Set up Just
+RUN dnf -y in just
+
 ## Set adw-gtk3
-COPY skel/.config/dconf/user /etc/skel/.config/dconf/user
+COPY files/etc/skel/.config/dconf/user /etc/skel/.config/dconf/user
 
 ## Systemd
 RUN systemctl enable libvirtd.service && \
