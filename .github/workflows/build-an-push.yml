@@ -1,7 +1,7 @@
 name: Build and Push bootc Image to Quay
 on:
   schedule:
-    - cron: "00 02 * * *" # Daily rebuild to catch Fedora/bootc updates
+    - cron: "00 02 * * *"
   push:
     paths-ignore:
       - "**.md"
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write 
+      id-token: write
 
     steps:
       - name: Checkout repository
