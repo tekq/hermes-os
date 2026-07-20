@@ -45,7 +45,6 @@ RUN dnf -y in virt-manager \
     adw-gtk3-theme && \
     dnf -y rm firefox \
     yelp \
-    gnome-tour \
     gnome-system-monitor \
     gnome-shell-extension-common \
     gnome-shell-extension-apps-menu \
