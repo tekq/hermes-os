@@ -41,7 +41,7 @@ RUN dnf -y in virt-manager \
     podman \
     plymouth \
     gnome-disk-utility \
-    gnome-software 
+    gnome-software \
     adw-gtk3-theme && \
     dnf -y rm firefox \
     yelp \
