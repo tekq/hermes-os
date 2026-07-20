@@ -21,7 +21,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        
+      - name: Check disk space
+        run: df -h
+        
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+          
+      - name: Check disk space
+        run: df -h
+        
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.4.0
 
