@@ -63,7 +63,7 @@ COPY files/etc/skel/.config/dconf/user /etc/skel/.config/dconf/user
 
 ## Systemd
 RUN systemctl enable libvirtd.service && \
-    systemctl enable bootc-fetch-apply-updates.service
+    systemctl enable bootc-fetch-apply-updates.timer
 
 ## Signing
 RUN mkdir -p /etc/pki/containers /etc/containers/registries.d
