@@ -62,8 +62,7 @@ RUN dnf -y in just
 COPY files/etc/skel/.config/dconf/user /etc/skel/.config/dconf/user
 
 ## Systemd
-RUN systemctl enable libvirtd.service && \
-    systemctl enable bootc-fetch-apply-updates.timer
+RUN systemctl enable libvirtd.service
 
 ## Signing
 RUN mkdir -p /etc/pki/containers /etc/containers/registries.d
@@ -75,4 +74,3 @@ COPY policy.json /etc/containers/policy.json
 COPY hermes-bootc.yaml /etc/containers/registries.d/hermes-bootc.yaml
 
 RUN dnf clean all
-
