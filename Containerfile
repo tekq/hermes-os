@@ -58,6 +58,9 @@ RUN dnf -y in virt-manager \
 ## Set up Just
 RUN dnf -y in just
 
+## Set up Nix
+RUN dnf -y in nix-core
+
 ## Set adw-gtk3
 COPY files/etc/skel/.config/dconf/user /etc/skel/.config/dconf/user
 
