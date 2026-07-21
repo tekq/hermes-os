@@ -1,5 +1,6 @@
 [Unit]
 Description=Bind mount for the Nix store
+DefaultDependencies=no
 RequiresMountsFor=/var/nix
 After=systemd-tmpfiles-setup.service
 
