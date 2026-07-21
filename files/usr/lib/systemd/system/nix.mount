@@ -1,0 +1,13 @@
+[Unit]
+Description=Bind mount for the Nix store
+RequiresMountsFor=/var/nix
+After=systemd-tmpfiles-setup.service
+
+[Mount]
+What=/var/nix
+Where=/nix
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target
