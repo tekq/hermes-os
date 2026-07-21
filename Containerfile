@@ -42,7 +42,8 @@ RUN dnf -y in virt-manager \
     plymouth \
     gnome-disk-utility \
     gnome-software \
-    adw-gtk3-theme && \
+    adw-gtk3-theme 
+    input-remapper && \
     dnf -y rm firefox \
     yelp \
     gnome-system-monitor \
