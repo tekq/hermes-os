@@ -1,0 +1,15 @@
+[Unit]
+Description=Initialize the Nix store database
+ConditionPathExists=!/nix/var/nix/db
+RequiresMountsFor=/nix
+After=nix.mount
+Before=nix-daemon.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/nix-store --init
+ExecStartPost=/usr/bin/mkdir -p /nix/var/nix/daemon-socket
+
+[Install]
+WantedBy=local-fs.target

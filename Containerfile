@@ -66,7 +66,7 @@ RUN mkdir -p /nix
 
 COPY --chmod=644 files/ /
 
-RUN systemctl enable nix.mount nix-daemon
+RUN systemctl enable nix.mount nix-store-init.service nix-daemon
 
 ## Set adw-gtk3
 COPY files/etc/skel/.config/dconf/user /etc/skel/.config/dconf/user
