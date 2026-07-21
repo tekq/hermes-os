@@ -56,6 +56,9 @@ RUN dnf -y in virt-manager \
     malcontent-control && \
     dnf clean all
 
+## Controller support
+RUN dnf -y in steam-devices
+
 ## Set up Just
 RUN dnf -y in just
 
