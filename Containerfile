@@ -62,7 +62,7 @@ RUN dnf -y in just
 COPY files/etc/skel/.config/dconf/user /etc/skel/.config/dconf/user
 
 ## Systemd
-RUN systemctl enable libvirtd.service
+RUN systemctl enable libvirtd.service lxc.service
 
 ## Signing
 RUN mkdir -p /etc/pki/containers /etc/containers/registries.d
