@@ -1,3 +1,3 @@
 docker:
-  quay.io/asmx2/hermes-bootc:
+  quay.io/asmx2/hermes-os:
     use-sigstore-attachments: true
