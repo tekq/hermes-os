@@ -16,6 +16,7 @@ RUN dnf -y copr enable ublue-os/akmods && \
     dnf -y in framework-laptop-kmod && \
     dnf -y copr enable asmx2/keylightd && \
     dnf -y in keylightd && \
+    systemctl enable keylightd && \
     dnf clean all
 
 ## Nvidia 
@@ -58,12 +59,8 @@ RUN dnf -y in virt-manager \
     malcontent-control && \
     dnf clean all
 
-## Patched Mutter
-RUN dnf -y copr enable trixieua/mutter-patched && \
-    dnf -y up
-
 ## Controller support
-RUN dnf -y in steam-devices
+RUN dnf -y in steam-devices 
 
 ## Set up Just
 RUN dnf -y in just
