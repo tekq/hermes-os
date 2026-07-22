@@ -1,8 +1,6 @@
 {
     "default": [
-        {
-            "type": "reject"
-        }
+        { "type": "reject" }
     ],
     "transports": {
         "docker": {
@@ -10,23 +8,16 @@
                 {
                     "type": "sigstoreSigned",
                     "keyPath": "/etc/pki/containers/hermes-bootc.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+                    "signedIdentity": { "type": "matchRepository" }
                 }
             ],
-            "registry.fedoraproject.org": [
-                  { "type": "insecureAcceptAnything" }
-            ],
-            "docker.io": [
-                { "type": "insecureAcceptAnything" }
-            ],
-            "quay.io": [
-                { "type": "insecureAcceptAnything" }
-            ],
-            "ghcr.io": [
-                { "type": "insecureAcceptAnything" }
-            ]
+            "registry.fedoraproject.org": [{ "type": "insecureAcceptAnything" }],
+            "docker.io": [{ "type": "insecureAcceptAnything" }],
+            "quay.io": [{ "type": "insecureAcceptAnything" }],
+            "ghcr.io": [{ "type": "insecureAcceptAnything" }]
+        },
+        "containers-storage": {
+            "": [{ "type": "insecureAcceptAnything" }]
         }
     }
 }
