@@ -1,2 +1,2 @@
 # Hermes OS 
-An incredibly opinionanted derivative of Fedora
+An incredibly opinionated derivative of Fedora
