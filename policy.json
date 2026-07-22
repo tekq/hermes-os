@@ -4,7 +4,7 @@
     ],
     "transports": {
         "docker": {
-            "quay.io/asmx2/hermes-bootc": [
+            "quay.io/asmx2/hermes-os": [
                 {
                     "type": "sigstoreSigned",
                     "keyPath": "/etc/pki/containers/hermes-bootc.pub",
