@@ -2,6 +2,8 @@ ARG VERSION=44
 ARG IMAGE_NAME=silverblue
 FROM quay.io/fedora/fedora-$IMAGE_NAME:$VERSION
 
+ENV IMAGE_NAME=silverblue
+
 COPY --from=ghcr.io/ublue-os/akmods:main-44 /kernel-rpms /tmp/kernel
 
 RUN dnf -y in /tmp/kernel/kernel*.rpm
