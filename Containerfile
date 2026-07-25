@@ -3,30 +3,19 @@ FROM quay.io/fedora/fedora-silverblue:$VERSION
 
 ENV IMAGE_NAME=silverblue
 
-COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-44 /kernel-rpms /tmp/kernel
+COPY --from=ghcr.io/ublue-os/akmods:main-44 /kernel-rpms /tmp/kernel
 
 RUN dnf -y in /tmp/kernel/kernel*.rpm
+
+COPY --from=ghcr.io/ublue-os/akmods:main-44 / /tmp/akmods-common
+
+RUN dnf -y in /tmp/akmods-common/rpms/common/framework-laptop-kmod-common-*.rpm /tmp/akmods-common/rpms/kmods/kmod-framework-laptop-*.rpm
 
 COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-44 /rpms /tmp/akmods-rpms
 
 RUN dnf5 -y upgrade --refresh mesa*
 
 RUN bash /tmp/akmods-rpms/ublue-os/nvidia-install.sh
-
-RUN dnf5 -y in akmods && \
-     mv /usr/bin/akmodsbuild{,.bak} && \
-    ln -s /usr/bin/true /usr/bin/akmodsbuild
-
-RUN dnf -y copr enable ublue-os/akmods && \
-    dnf -y in framework-laptop-kmod && \
-    dnf -y copr enable asmx2/keylightd && \
-    dnf -y in keylightd && \
-    systemctl enable keylightd && \
-    dnf clean all
-
-RUN rm /usr/bin/akmodsbuild && \
-    mv /usr/bin/akmodsbuild{.bak,} && \
-    akmods --force --kernels $(rpm -qva | grep "kernel-devel" | head -n 1 | sed "s/kernel-devel-//")
 
 RUN mkdir -p /usr/lib/bootc/kargs.d/ && \
     echo 'kargs = ["quiet", "splash", "loglevel=3", "rd.udev.log_level=3"]' > /usr/lib/bootc/kargs.d/01-silent-boot.toml && \
@@ -79,4 +68,5 @@ COPY policy.json /etc/containers/policy.json
 
 COPY hermes-bootc.yaml /etc/containers/registries.d/hermes-bootc.yaml
 
-RUN dnf clean all
+RUN dnf clean all &&
+    rm -rf /tmp/*
