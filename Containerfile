@@ -1,30 +1,30 @@
 FROM quay.io/fedora/fedora-silverblue:44
 
-RUN dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-multimedia.repo && \
-    dnf5 -y config-manager addrepo --from-repofile=https://negativo17.org/repos/fedora-nvidia.repo && \
-    dnf5 -y config-manager setopt fedora-multimedia.priority=90 && \
-    dnf5 -y config-manager setopt fedora-nvidia.priority=90
+## RPMFusion
+RUN dnf -y install \
+     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
+     dnf clean all
 
 ## Fake it till you make it
-RUN dnf5 -y in akmods && \
+RUN dnf -y in akmods rpmfusion-nonfree-release-tainted && \
     mv /usr/bin/akmodsbuild{,.bak} && \
     ln -s /usr/bin/true /usr/bin/akmodsbuild
 
 ## Framework (gangster) shit
-RUN dnf5 -y copr enable ublue-os/akmods && \
-    dnf5 -y in framework-laptop-kmod && \
-    dnf5 -y copr enable asmx2/keylightd && \
-    dnf5 -y in keylightd && \
+RUN dnf -y copr enable ublue-os/akmods && \
+    dnf -y in framework-laptop-kmod && \
+    dnf -y copr enable asmx2/keylightd && \
+    dnf -y in keylightd && \
     systemctl enable keylightd && \
-    dnf5 clean all
+    dnf clean all
 
 ## Nvidia 
-RUN dnf5 -y in nvidia-driver \
-              nvidia-driver-cuda \
-              cuda && \
-    dnf5 -y copr enable @ai-ml/nvidia-container-toolkit && \
-    dnf5 -y in nvidia-container-toolkit nvidia-container-toolkit-selinux && \
-    dnf5 clean all
+RUN dnf -y in akmod-nvidia-open \
+              xorg-x11-drv-nvidia-cuda && \
+    dnf -y copr enable @ai-ml/nvidia-container-toolkit && \
+    dnf -y in nvidia-container-toolkit nvidia-container-toolkit-selinux && \
+    dnf clean all
 
 RUN rm /usr/bin/akmodsbuild && \
     mv /usr/bin/akmodsbuild{.bak,} && \
@@ -35,12 +35,8 @@ RUN mkdir -p /usr/lib/bootc/kargs.d/ && \
     echo 'kargs = ["quiet", "splash", "loglevel=3", "rd.udev.log_level=3"]' > /usr/lib/bootc/kargs.d/01-silent-boot.toml && \
     echo 'kargs = ["rd.driver.blacklist=nouveau", "modprobe.blacklist=nouveau", "nouveau.modeset=0"]' > /usr/lib/bootc/kargs.d/99-blacklist-nouveau.toml
 
-## Codecs
-RUN dnf5 -y --repo=fedora-multimedia in mesa-dri-drivers mesa-va-drivers mesa-vulkan-drivers libva libheif && \
-    dnf5 versionlock add mesa-dri-drivers mesa-va-drivers mesa-vulkan-drivers libva libheif
-
 ## Desktop stuf
-RUN dnf5 -y in virt-manager \
+RUN dnf -y in virt-manager \
     lxc \
     libvirt-daemon-kvm \
     libvirt-daemon-lxc \
@@ -51,7 +47,7 @@ RUN dnf5 -y in virt-manager \
     gnome-software \
     adw-gtk3-theme \
     input-remapper && \
-    dnf5 -y rm firefox \
+    dnf -y rm firefox \
     yelp \
     gnome-system-monitor \
     gnome-shell-extension-common \
@@ -61,17 +57,16 @@ RUN dnf5 -y in virt-manager \
     gnome-shell-extension-window-list \
     gnome-shell-extension-background-logo \
     malcontent-control && \
-    dnf5 clean all
+    dnf clean all
 
 ## Controller support
-RUN dnf5 -y in steam-devices 
+RUN dnf -y in steam-devices 
 
 ## Set up Just
-RUN dnf5 -y in just
+RUN dnf -y in just
 
 ## Set up Nix
-RUN dnf5 install -y nix nix-daemon && \ 
-    dnf5 clean all
+RUN dnf install -y nix nix-daemon && dnf clean all
 
 RUN mkdir -p /nix
 
@@ -94,4 +89,4 @@ COPY policy.json /etc/containers/policy.json
 
 COPY hermes-bootc.yaml /etc/containers/registries.d/hermes-bootc.yaml
 
-RUN dnf5 clean all
+RUN dnf clean all
