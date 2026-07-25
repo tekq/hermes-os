@@ -1,9 +1,11 @@
 ARG VERSION=44
-FROM quay.io/fedora/fedora-silverblue:$VERSION
+ARG IMAGE_NAME=silverblue
+FROM quay.io/fedora/fedora-$IMAGE_NAME:$VERSION
 
 ENV IMAGE_NAME=silverblue
+ENV VERSION=44
 
-COPY --from=ghcr.io/ublue-os/akmods:main-44 /kernel-rpms /tmp/kernel
+COPY --from=ghcr.io/ublue-os/akmods:main-${VERSION} /kernel-rpms /tmp/kernel
 
 RUN dnf -y in /tmp/kernel/kernel*.rpm
 
@@ -68,5 +70,5 @@ COPY policy.json /etc/containers/policy.json
 
 COPY hermes-bootc.yaml /etc/containers/registries.d/hermes-bootc.yaml
 
-RUN dnf clean all &&
+RUN dnf clean all && \
     rm -rf /tmp/*
