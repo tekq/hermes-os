@@ -1,17 +1,22 @@
-FROM quay.io/fedora/fedora-silverblue:44
+ARG VERSION=44
+FROM quay.io/fedora/fedora-silverblue:$VERSION
 
-## RPMFusion
-RUN dnf -y install \
-     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
-     dnf clean all
+ENV IMAGE_NAME=silverblue
 
-## Fake it till you make it
-RUN dnf -y in akmods rpmfusion-nonfree-release-tainted && \
-    mv /usr/bin/akmodsbuild{,.bak} && \
+COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-44 /kernel-rpms /tmp/kernel
+
+RUN dnf -y in /tmp/kernel/kernel*.rpm
+
+COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-44 /rpms /tmp/akmods-rpms
+
+RUN dnf5 -y upgrade --refresh mesa*
+
+RUN bash /tmp/akmods-rpms/ublue-os/nvidia-install.sh
+
+RUN dnf5 -y in akmods && \
+     mv /usr/bin/akmodsbuild{,.bak} && \
     ln -s /usr/bin/true /usr/bin/akmodsbuild
 
-## Framework (gangster) shit
 RUN dnf -y copr enable ublue-os/akmods && \
     dnf -y in framework-laptop-kmod && \
     dnf -y copr enable asmx2/keylightd && \
@@ -19,23 +24,14 @@ RUN dnf -y copr enable ublue-os/akmods && \
     systemctl enable keylightd && \
     dnf clean all
 
-## Nvidia 
-RUN dnf -y in akmod-nvidia-open \
-              xorg-x11-drv-nvidia-cuda && \
-    dnf -y copr enable @ai-ml/nvidia-container-toolkit && \
-    dnf -y in nvidia-container-toolkit nvidia-container-toolkit-selinux && \
-    dnf clean all
-
 RUN rm /usr/bin/akmodsbuild && \
     mv /usr/bin/akmodsbuild{.bak,} && \
     akmods --force --kernels $(rpm -qva | grep "kernel-devel" | head -n 1 | sed "s/kernel-devel-//")
 
-## kargs
 RUN mkdir -p /usr/lib/bootc/kargs.d/ && \
     echo 'kargs = ["quiet", "splash", "loglevel=3", "rd.udev.log_level=3"]' > /usr/lib/bootc/kargs.d/01-silent-boot.toml && \
     echo 'kargs = ["rd.driver.blacklist=nouveau", "modprobe.blacklist=nouveau", "nouveau.modeset=0"]' > /usr/lib/bootc/kargs.d/99-blacklist-nouveau.toml
 
-## Desktop stuf
 RUN dnf -y in virt-manager \
     lxc \
     libvirt-daemon-kvm \
@@ -59,13 +55,10 @@ RUN dnf -y in virt-manager \
     malcontent-control && \
     dnf clean all
 
-## Controller support
 RUN dnf -y in steam-devices 
 
-## Set up Just
 RUN dnf -y in just
 
-## Set up Nix
 RUN dnf install -y nix nix-daemon && dnf clean all
 
 RUN mkdir -p /nix
@@ -74,13 +67,10 @@ COPY --chmod=644 files/ /
 
 RUN systemctl enable nix.mount nix-store-init.service nix-daemon
 
-## Set adw-gtk3
 COPY files/etc/skel/.config/dconf/user /etc/skel/.config/dconf/user
 
-## Systemd
 RUN systemctl enable libvirtd.service lxc.service
 
-## Signing
 RUN mkdir -p /etc/pki/containers /etc/containers/registries.d
 
 COPY cosign.pub /etc/pki/containers/hermes-bootc.pub
