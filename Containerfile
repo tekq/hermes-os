@@ -44,6 +44,7 @@ RUN dnf -y in virt-manager \
     input-remapper && \
     dnf -y rm firefox \
     yelp \
+    gnome-tour \
     gnome-system-monitor \
     gnome-shell-extension-common \
     gnome-shell-extension-apps-menu \
