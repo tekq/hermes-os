@@ -64,9 +64,9 @@ RUN bash /tmp/removesuid.sh && \
     systemctl enable polkit-agent-helper.socket
 
 ## Keylightd
-RUN dnf -y copr enable asmx2/keylightd && \
-    dnf -y in keylightd && \
-    systemctl enable keylightd && \
+RUN dnf -y copr enable asmx2/keylightc && \
+    dnf -y in keylightc && \
+    systemctl enable keylightc && \
     dnf clean all
 
 ## Controller support
