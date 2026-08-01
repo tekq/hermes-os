@@ -21,7 +21,6 @@ RUN dnf5 -y upgrade --refresh mesa*
 
 RUN bash /tmp/akmods-rpms/ublue-os/nvidia-install.sh
 
-
 ## Kargs
 RUN mkdir -p /usr/lib/bootc/kargs.d/ && \
     echo 'kargs = ["quiet", "splash", "loglevel=3", "rd.udev.log_level=3"]' > /usr/lib/bootc/kargs.d/01-silent-boot.toml && \
@@ -52,6 +51,11 @@ RUN dnf -y in virt-manager \
     dnf clean all
 
 RUN systemctl enable libvirtd.service lxc.service
+
+## Remove SUID (thanks SecureBlue <3)
+COPY removesuid.sh /tmp/removesuid.sh
+RUN bash /tmp/removesuid.sh
+# TODO: Add Graphene's hardened malloc 
 
 ## Keylightd
 RUN dnf -y copr enable asmx2/keylightd && \
