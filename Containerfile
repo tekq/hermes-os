@@ -54,7 +54,8 @@ RUN systemctl enable libvirtd.service lxc.service
 
 ## Remove SUID (thanks SecureBlue <3)
 COPY removesuid.sh /tmp/removesuid.sh
-RUN bash /tmp/removesuid.sh
+RUN bash /tmp/removesuid.sh && \
+    systemctl enable polkit-agent-helper.socket
 # TODO: Add Graphene's hardened malloc 
 
 ## Keylightd
