@@ -64,11 +64,14 @@ RUN bash /tmp/removesuid.sh && \
 
 ## Hardened malloc
 RUN dnf -y copr enable secureblue/packages && \
-    dnf -y in hardened_malloc
+    dnf -y in hardened_malloc no_rlimit_as
 
 COPY hardened_malloc-pam.sh /tmp/hardened_malloc-pam.sh
-RUN bash /tmp/hardened_malloc-pam.sh
+RUN bash /tmp/hardened_malloc-pam.sh    && \
+    ls -la /usr/lib64/libno_rlimit_as.so /usr/lib64/libhardened_malloc.so && \
+    ldconfig -p | grep -E 'libno_rlimit_as|libhardened_malloc'
 
+RUN false
 COPY files/etc/profile.d/hardened_malloc.sh /etc/profile.d/hardened_malloc.sh
 COPY files/usr/lib/environment.d/40-hardened_malloc.conf /usr/lib/environment.d/40-hardened_malloc.conf
 COPY files/usr/lib/systemd/system.conf.d/40-hardened_malloc.conf /usr/lib/systemd/system.conf.d/40-hardened_malloc.conf
