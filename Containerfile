@@ -2,20 +2,24 @@ ARG VERSION=44
 ARG IMAGE_NAME=silverblue
 FROM quay.io/fedora/fedora-$IMAGE_NAME:$VERSION
 
-ENV IMAGE_NAME=silverblue
+ARG VERSION
+ARG IMAGE_NAME
+
+ENV VERSION=$VERSION
+ENV IMAGE_NAME=$IMAGE_NAME
 
 ## uBlue Kernel
-COPY --from=ghcr.io/ublue-os/akmods:main-44 /kernel-rpms /tmp/kernel
+COPY --from=ghcr.io/ublue-os/akmods:main-$VERSION /kernel-rpms /tmp/kernel
 
 RUN dnf -y in /tmp/kernel/kernel*.rpm
 
 ## Framework Modules
-COPY --from=ghcr.io/ublue-os/akmods:main-44 / /tmp/akmods-common
+COPY --from=ghcr.io/ublue-os/akmods:main-$VERSION / /tmp/akmods-common
 
 RUN dnf -y in /tmp/akmods-common/rpms/common/framework-laptop-kmod-common-*.rpm /tmp/akmods-common/rpms/kmods/kmod-framework-laptop-*.rpm
 
 ## Nvidia
-COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-44 /rpms /tmp/akmods-rpms
+COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-$VERSION /rpms /tmp/akmods-rpms
 
 RUN dnf5 -y upgrade --refresh mesa*
 
@@ -54,9 +58,20 @@ RUN systemctl enable libvirtd.service lxc.service
 
 ## Remove SUID (thanks SecureBlue <3)
 COPY removesuid.sh /tmp/removesuid.sh
+
 RUN bash /tmp/removesuid.sh && \
     systemctl enable polkit-agent-helper.socket
-# TODO: Add Graphene's hardened malloc 
+
+## Hardened malloc
+RUN dnf -y copr enable secureblue/packages && \
+    dnf -y in hardened_malloc
+
+COPY hardened_malloc-pam.sh /tmp/hardened_malloc-pam.sh
+RUN bash /tmp/hardened_malloc-pam.sh
+
+COPY files/etc/profile.d/hardened_malloc.sh /etc/profile.d/hardened_malloc.sh
+COPY files/usr/lib/environment.d/40-hardened_malloc.conf /usr/lib/environment.d/40-hardened_malloc.conf
+COPY files/usr/lib/systemd/system.conf.d/40-hardened_malloc.conf /usr/lib/systemd/system.conf.d/40-hardened_malloc.conf
 
 ## Keylightd
 RUN dnf -y copr enable asmx2/keylightd && \
