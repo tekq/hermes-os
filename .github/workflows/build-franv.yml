@@ -2,9 +2,6 @@ name: Build and Push image for Framework + NVIDIA
 on:
   schedule:
     - cron: "00 02 * * 0"
-  push:
-    paths-ignore:
-      - "**.md"
   workflow_dispatch:
 
 env:

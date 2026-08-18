@@ -1,4 +1,4 @@
-name: Build and Push generic image
+name: Build and Push image for Framework
 on:
   schedule:
     - cron: "00 02 * * 0"
@@ -45,8 +45,8 @@ jobs:
         uses: redhat-actions/buildah-build@v3
         with:
           image: ${{ env.IMAGE_NAME }}
-          tags: latest ${{ github.sha }}
-          containerfiles: ./Containerfile
+          tags: franv ${{ github.sha }}
+          containerfiles: ./Containerfile-fra
           oci: true
 
       - name: Push to Quay

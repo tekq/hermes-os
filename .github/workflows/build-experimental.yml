@@ -1,7 +1,10 @@
-name: Build and Push generic image
+name: Build Experimental Image
 on:
   schedule:
     - cron: "00 02 * * 0"
+  push:
+    paths-ignore:
+      - "**.md"
   workflow_dispatch:
 
 env:
@@ -45,8 +48,8 @@ jobs:
         uses: redhat-actions/buildah-build@v3
         with:
           image: ${{ env.IMAGE_NAME }}
-          tags: latest ${{ github.sha }}
-          containerfiles: ./Containerfile
+          tags: experimental ${{ github.sha }}
+          containerfiles: ./Containerfile-exp
           oci: true
 
       - name: Push to Quay
