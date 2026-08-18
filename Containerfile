@@ -19,10 +19,6 @@ RUN mkdir -p /usr/lib/bootc/kargs.d/ && \
     echo 'kargs = ["hash_pointers=always" "init_on_alloc=1" "init_on_free=1" "iommu=force" "intel_iommu=on" "iommu.passthrough=0" "iommu.strict=1" "kvm_amd.sev=1" "kvm_amd.sev_es=1" "kvm_amd.sev_snp=1" "kvm-intel.vmentry_l1d_flush=always" "kvm.mitigate_smt_rsb=1" "l1d_flush=on" "l1tf=full,force" "lockdown=confidentiality" "loglevel=0" "mitigations=auto" "module.sig_enforce=1" "page_alloc.shuffle=1" "proc_mem.force_override=ptrace" "pti=on" "random.trust_bootloader=off" "randomize_kstack_offset=on" "rd.shell=0" "rd.emergency=halt" "slab_debug=FZ" "slab_nomerge" "spec_store_bypass_disable=on" "spectre_v2=on" "ssbd=force-on" "systemd.ssh_auto=no" "vdso32=0" "vsyscall=none"]' \
          > /usr/lib/bootc/kargs.d/00-secureblue-kargs.toml
 
-## No Multilib
-RUN dnf5 -y rm $(rpm -qva | grep "\.i686" | tr "\n" " ") || true && \
-    echo 'kargs = ["ia32_emulation=0"]' > /usr/lib/bootc/kargs.d/00-nomultilib.toml
-
 ## Desktop
 RUN dnf5 -y in virt-manager \
     lxc \
