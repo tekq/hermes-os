@@ -1,4 +1,4 @@
-name: Build and Push image for Framework
+name: Build All Targets
 on:
   schedule:
     - cron: "00 02 * * 0"
@@ -14,6 +14,19 @@ jobs:
     permissions:
       contents: read
       id-token: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: generic
+            tags: latest generic generic-${{ github.sha }}
+          - target: fra
+            tags: fra fra-${{ github.sha }}
+          - target: nv
+            tags: nv nv-${{ github.sha }}
+          - target: franv
+            tags: franv franv-${{ github.sha }}
 
     steps:
       - name: Checkout repository
@@ -45,8 +58,9 @@ jobs:
         uses: redhat-actions/buildah-build@v3
         with:
           image: ${{ env.IMAGE_NAME }}
-          tags: franv ${{ github.sha }}
-          containerfiles: ./Containerfile-fra
+          tags: ${{ matrix.tags }}
+          containerfiles: ./Containerfile-stable
+          target: ${{ matrix.target }}
           oci: true
 
       - name: Push to Quay

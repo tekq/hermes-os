@@ -49,7 +49,7 @@ jobs:
         with:
           image: ${{ env.IMAGE_NAME }}
           tags: experimental ${{ github.sha }}
-          containerfiles: ./Containerfile-exp
+          containerfiles: ./Containerfile
           oci: true
 
       - name: Push to Quay

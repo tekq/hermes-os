@@ -13,11 +13,28 @@ COPY --from=ghcr.io/ublue-os/akmods:main-$VERSION /kernel-rpms /tmp/kernel
 
 RUN dnf5 -y in /tmp/kernel/kernel*.rpm
 
+## Framework Modules
+COPY --from=ghcr.io/ublue-os/akmods:main-$VERSION / /tmp/akmods-common
+
+RUN dnf5 -y in /tmp/akmods-common/rpms/common/framework-laptop-kmod-common-*.rpm /tmp/akmods-common/rpms/kmods/kmod-framework-laptop-*.rpm
+
+## Nvidia
+COPY --from=ghcr.io/ublue-os/akmods-nvidia-open:main-$VERSION /rpms /tmp/akmods-rpms
+
+RUN dnf5 -y upgrade --refresh mesa*
+
+RUN bash /tmp/akmods-rpms/ublue-os/nvidia-install.sh
+
 ## Kargs
 RUN mkdir -p /usr/lib/bootc/kargs.d/ && \
     echo 'kargs = ["quiet", "splash"]' > /usr/lib/bootc/kargs.d/01-silent-boot.toml && \
+    echo 'kargs = ["rd.driver.blacklist=nouveau", "modprobe.blacklist=nouveau", "nouveau.modeset=0"]' > /usr/lib/bootc/kargs.d/99-blacklist-nouveau.toml && \
     echo 'kargs = ["hash_pointers=always" "init_on_alloc=1" "init_on_free=1" "iommu=force" "intel_iommu=on" "iommu.passthrough=0" "iommu.strict=1" "kvm_amd.sev=1" "kvm_amd.sev_es=1" "kvm_amd.sev_snp=1" "kvm-intel.vmentry_l1d_flush=always" "kvm.mitigate_smt_rsb=1" "l1d_flush=on" "l1tf=full,force" "lockdown=confidentiality" "loglevel=0" "mitigations=auto" "module.sig_enforce=1" "page_alloc.shuffle=1" "proc_mem.force_override=ptrace" "pti=on" "random.trust_bootloader=off" "randomize_kstack_offset=on" "rd.shell=0" "rd.emergency=halt" "slab_debug=FZ" "slab_nomerge" "spec_store_bypass_disable=on" "spectre_v2=on" "ssbd=force-on" "systemd.ssh_auto=no" "vdso32=0" "vsyscall=none"]' \
          > /usr/lib/bootc/kargs.d/00-secureblue-kargs.toml
+
+## No Multilib
+RUN dnf5 -y rm $(rpm -qva | grep "\.i686" | tr "\n" " ") || true && \
+    echo 'kargs = ["ia32_emulation=0"]' > /usr/lib/bootc/kargs.d/00-nomultilib.toml
 
 ## Desktop
 RUN dnf5 -y in virt-manager \
@@ -51,6 +68,12 @@ COPY removesuid.sh /tmp/removesuid.sh
 
 RUN bash /tmp/removesuid.sh && \
     systemctl enable polkit-agent-helper.socket
+
+## Keylightc
+RUN dnf5 -y copr enable asmx2/keylightc && \
+    dnf5 -y in keylightc && \
+    systemctl enable keylightc && \
+    dnf5 clean all
 
 ## Controller support
 RUN dnf5 -y in steam-devices 
