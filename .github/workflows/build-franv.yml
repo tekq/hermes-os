@@ -1,4 +1,4 @@
-name: Build and Push bootc Image to Quay
+name: Build and Push image for Framework + NVIDIA
 on:
   schedule:
     - cron: "00 02 * * 0"

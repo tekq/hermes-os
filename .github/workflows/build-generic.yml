@@ -1,4 +1,4 @@
-name: Build and Push bootc Image to Quay
+name: Build and Push generic image
 on:
   schedule:
     - cron: "00 02 * * 0"
