@@ -20,7 +20,7 @@ RUN mkdir -p /usr/lib/bootc/kargs.d/ && \
          > /usr/lib/bootc/kargs.d/00-secureblue-kargs.toml
 
 ## No Multilib
-RUN dnf5 -y rm $(rpm -qva | grep "\.i686" | tr "\n" " ") && \
+RUN dnf5 -y rm $(rpm -qva | grep "\.i686" | tr "\n" " ") || true && \
     echo 'kargs = ["ia32_emulation=0"]' > /usr/lib/bootc/kargs.d/00-nomultilib.toml
 
 ## Desktop
